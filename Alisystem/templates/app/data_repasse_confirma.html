@@ -1,0 +1,48 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <p>{{ hora_atual }}</p>
+    <h1>Alisystem</h1>
+    <p class="lead">Você atribuiu a data de hoje <i><u>({{ data_repasse }})</u></i> como uma nova data de repasse</p>
+</div>
+     <p class="lead">Hoje você alterou {{ num }} procedimentos aplicados:</p>
+
+
+<div>
+    <table class="table table-condensed">
+                <tr>
+                    <th>Cód.</th>
+                    <th>Núm. GTO</th>
+                    <th>Convênio</th>
+                    <th>Paciente</th>
+                    <th>Dentista</th>
+                    <th>Valor (R$)</th>
+                    <th>Valor líquido (R$)</th>
+                    <th>Valor repassado (R$)</th>
+
+                </tr>
+
+               {% for procedimento_aplicado in b  %}
+
+                <tr>
+                    <td>{{ procedimento_aplicado.atendimento.id }}</td>
+                    <td>{{ procedimento_aplicado.atendimento.num_GTO }}</td>
+                    <td>{{ procedimento_aplicado.atendimento.convenio }}</td>
+                    <td>{{ procedimento_aplicado.atendimento.paciente }}</td>
+                    <td>{{ procedimento_aplicado.atendimento.dentista }}</td>
+                    <td>{{ procedimento_aplicado.valor_real }}</td>
+                    <td>{{ procedimento_aplicado.valor_liquido_recebido }}</td>
+                    <td>{{ procedimento_aplicado.valor_repassado }}</td>
+                </tr>
+
+        {% endfor %}
+
+    </table>
+</div>
+
+<br>
+<a class="btn btn-primary" href="/pagamentos">Retornar ao menu pagamentos &raquo;</a>
+
+{% endblock %}

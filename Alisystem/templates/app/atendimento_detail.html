@@ -1,0 +1,51 @@
+ {% extends "app/layout.html" %} 
+
+{% block content %} 
+	<h2>Procedimentos realizados no atendimento</h2>
+
+
+	<ul>	
+		<table>
+			<tr>
+				<th>Cód.</th>
+				<th>Procedimento</th>
+				<th>Valor (R$)</th>
+				<th>Recebido</th>
+				<th>Glosado</th>
+				
+				
+			</tr>
+			
+				{% for procedimento in procedimento_list %}
+				
+			<tr>
+				<td>{{ procedimento.id }}</td>
+				<td>{{ procedimento.procedimento }}</td>
+				<td>{{ procedimento.valor_real }}</td>
+				<td>{{ procedimento.recebido }}</td>
+				<td>{{ procedimento.glosado }}</td>
+				
+				
+			</tr>
+				{% endfor %}
+			  
+			</table>
+			
+			<p></p>
+		
+	</ul>
+
+<!--	
+<form method="get" action="http://127.0.0.1:8000">
+			<button type="submit">Principal</button>
+</form>-->
+
+<a href="{% url 'home' %}" class="btn btn-primary btn-large">Home &raquo;</a>
+
+
+	
+	
+{% endblock %} 
+
+
+

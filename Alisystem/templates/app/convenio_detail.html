@@ -1,0 +1,47 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+
+<h2>Detalhe do Convênio</h2>
+
+
+
+
+
+<p>
+<a href="add" class="btn btn-primary btn-large">Novo Convênio &raquo;</a>
+</p>
+
+</div>	
+	<ul>	
+		<table>
+			<tr>
+				<th>Cód.</th>
+				<th>Convênio</th>				
+			</tr>
+			
+				{% for convenio in object_list %}
+				
+			<tr>
+				<td>{{ convenio.id }}</td>
+				<td>{{ convenio.convenio }}</td>				
+			</tr>
+				{% endfor %}
+			  
+			</table>
+		
+	</ul>
+
+
+<form method="get" action="http://127.0.0.1:8000">
+			<button type="submit">Principal</button>
+</form>
+
+
+	
+	
+	
+{% endblock %}
+

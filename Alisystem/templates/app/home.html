@@ -1,0 +1,45 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <p>{{ hora_atual }}</p>
+    <h1>Alisystem &bigstar; </h1>
+    
+    <p class="lead">Bem vindo! Sistema de gestão para a Claris Odontologia. Agora com os procedimentos aplicados dentro de cada GTO.</p>
+    <p>
+ <!--   	<a href="/admin" class="btn btn-primary btn-large">Acesse o Admin &raquo;</a>
+    	<a href="/convenio" class="btn btn-primary btn-large">Convenios &raquo;</a>
+    	<a href="/tipos" class="btn btn-primary btn-large">Especialidades &raquo;</a>
+    	<a href="/atendimentos" class="btn btn-primary btn-large">Atendimentos &raquo;</a>
+    	<a href="/convenio" class="btn btn-primary btn-large">Convenios &raquo;</a>
+-->
+    </p>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <h2>Atendimentos</h2>
+        <p>
+            Clique aqui para inserir um novo atendimento ou gerenciar atendimentos passados.
+        </p>
+        <p><a class="btn btn-primary" href="admin/Alisystem/atendimento/add">Novo atendimento &raquo;</a></p>
+    </div>
+    <div class="col-md-4">
+        <h2>Pagamentos</h2>
+        <p>Clique aqui para registrar os pagamentos realizados pelos convênios.</p>
+        <p><a class="btn btn-primary" href="/pagamentos">Registrar pagamentos &raquo;</a></p>
+    </div>
+    <div class="col-md-4">
+        <h2>Painéis</h2>
+        <p>Clique aqui para visualizar os painéis de pagamentos e repasses para os dentistas.</p>
+        <p><a class="btn btn-primary" href="dentistas/">Ver painéis &raquo;</a></p>
+    </div>
+</div>
+
+
+
+{% endblock %}
+
+
+"

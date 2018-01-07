@@ -1,0 +1,39 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <p>{{ hora_atual }}</p>
+    <h1>Registro de pagamentos</h1>
+    <p class="lead">Registre aqui abaixo os pagamentos realizados pelos convênios</p>
+    <p>Convênio: {{ escolha }}</p>
+    <p>Valor total: {{ valor }}</p>
+</div>
+    
+    <table>
+    	<tr>
+    		<th>Data do atendimento</th>
+    		<th>Núm. GTO</th>
+    		<th>Dentista</th>
+    		<th>Valor real</th>
+    		<th>Recebido</th>
+    	</tr>
+    	<tbody>	   		
+    		{% for linha in table %}
+    		<tr>
+    			<td>{{ linha.data_atendimento }}</td>
+    			<td>{{ linha.num_GTO }}</td>
+    			<td>{{ linha.dentista }}</td>
+    			<td>{{ linha.valor_real }}</td>
+    			<td>{{ linha.recebido }}</td>
+			</tr>
+			{% endfor %}	
+		</tbody>    
+    </table>
+     
+    
+    <p><a href="{% url 'home' %}" class="btn btn-primary btn-large">Home &raquo;</a></p>
+
+
+
+{% endblock %}

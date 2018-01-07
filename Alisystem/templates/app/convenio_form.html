@@ -1,0 +1,30 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+
+	<h2>Convênios</h2>
+
+<form action="" method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Save" />
+    
+</form>
+
+<form method="get" action="delete">
+			<button type="submit">Apagar</button>
+</form>
+
+</div>	
+	
+<form method="get" action="http://127.0.0.1:8000">
+			<button type="submit">Principal</button>
+</form>
+
+
+	
+	
+	
+{% endblock %}
+

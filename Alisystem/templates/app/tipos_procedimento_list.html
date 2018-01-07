@@ -1,0 +1,35 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+	<h2>Tipos de procedimento (Especialidades)</h2>
+
+
+	<ul>	
+		<table>
+			<tr>
+				<th>Cód.</th>
+				<th>Tipo de procedimento</th>				
+			</tr>
+			
+				{% for object in object_list %}
+				
+			<tr>
+				<td>{{ object.id }}</td>
+				<td>{{ object.tipo_procedimento }}</td>				
+			</tr>
+				{% endfor %}
+			  
+			</table>
+		
+	</ul>
+	
+<form method="get" action="http://127.0.0.1:8000">
+			<button type="submit">Principal</button>
+</form>
+
+
+	
+	
+	
+{% endblock %}
+

@@ -1,0 +1,54 @@
+ {% extends "app/layout.html" %} 
+
+{% block content %}
+	
+<div class="jumbotron">
+    <h2>Atendimentos</h2>
+    <p>Clique no número de cada atendimento para visualizar os procedimentos aplicados</p>
+</div>
+
+	<ul>	
+		<table class="table">
+			<tr>
+				<th>Cód.</th>
+				<th>Número da GTO</th>
+                <th>Data de atendimento</th>
+				<th>Paciente</th>
+				<th>Dentista</th>
+				<th>Convênio</th>
+				
+				
+			</tr>
+			
+				{% for atendimento in object_list %}
+				
+			<tr>
+				<td><a href="{{ atendimento.id }}/"> {{ atendimento.id }} </a></td>
+				<td>{{ atendimento.num_GTO }}</td>
+                <td>{{ atendimento.data_atendimento }}</td>
+				<td>{{ atendimento.paciente }}</td>
+				<td>{{ atendimento.dentista }}</td>
+				<td>{{ atendimento.convenio }}</td>
+				
+				
+			</tr>
+				{% endfor %}
+			  
+			</table>
+		
+	</ul>
+
+<!--	
+<form method="get" action="http://127.0.0.1:8000">
+			<button type="submit">Principal</button>
+</form>-->
+
+<a href="{% url 'dentistas' %}" class="btn btn-primary btn-large">&laquo; Voltar para lista de dentistas</a>
+<a href="/admin/Alisystem/atendimento/add" class="btn btn-primary btn-large">Novo atendimento &raquo;</a>
+<br><br>
+<a href="{% url 'home' %}" class="btn btn-primary btn-large">Home &raquo;</a>
+	
+{% endblock %} 
+
+
+

@@ -1,0 +1,29 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+    
+    <h1>Painel dos dentistas</h1>
+    
+    <p class="lead">Clique abaixo para ver o painel de repasses de {{ escolha }}</p>
+    
+<!--    
+    <p class="lead">Escolha abaixo a data de repasse</p>
+    
+	
+    <table>{{ form.as_table }}</table>
+-->
+    
+    <p>
+    	<a href="/painel/{{ escolha }}" class="btn btn-primary btn-large">Todos os atendimentos &raquo;</a>
+    	<a href="/painel/data/{{ escolha }}" class="btn btn-primary btn-large">Repasses mês atual &raquo;</a>
+    	<a href="/painel/glosado/{{ escolha }}" class="btn btn-primary btn-large">Glosados &raquo;</a>
+       	
+    </p>
+</div>
+
+<a href="{% url 'home' %}" class="btn btn-primary btn-large">Home &raquo;</a>
+
+
+{% endblock %}

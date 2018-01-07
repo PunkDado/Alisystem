@@ -1,0 +1,64 @@
+ {% extends "app/layout.html" %} 
+
+{% block content %} 
+	
+<div class = "jumbotron">
+    <h2>Detalhes deste atendimento</h2>
+</div>	
+    <p><b>Núm. GTO:</b> {{ atendimento.num_GTO }}</p>
+    <p><b>Dentista:</b> Dr(a) {{ atendimento.dentista }}</p> 
+    <p><b>Convênio:</b> {{ atendimento.convenio }}</p>
+    <p><b>Forma de pagamento:</b> {{ atendimento.forma_pagamento }}</p>
+    <p><b>Data:</b> {{ atendimento.data_atendimento }}</p>
+	<p><b>Paciente:</b> {{ atendimento.paciente }}</p>
+    <p><b>Encaminhado por:</b> {{ atendimento.encaminhado_por }}</p>
+    <p><b>Comentários:</b> {{ atendimento.comentarios }}</p>
+	
+	<br>
+
+    <h4>Procedimentos aplicados nesta GTO</h4>
+	<ul>	
+		<table class="table table-condensed">
+			<tr>
+				<th>Cód.</th>
+				<th>Procedimento</th>
+				<th>Valor (R$)</th>
+				<th>Repassado</th>
+				<th>Glosado</th>
+				
+				
+			</tr>
+			
+				{% for procedimento in atendimento.procedimentos_aplicado_set.all %}
+				
+			<tr>
+				<td>{{ procedimento.id }}</td>
+				<td>{{ procedimento.procedimento }}</td>
+				<td>{{ procedimento.valor_real }}</td>
+				<td>{% if procedimento.repassado %} &#10004;&#128512;&#128514; {% else %}  {% endif %}</td>
+				<td>{% if procedimento.glosado %} Glosado!&#128530;  {% else %}  {% endif %}</td>
+				
+				
+			</tr>
+				{% endfor %}
+			  
+			</table>
+			
+			<p></p>
+		
+	</ul>
+
+<!--	
+<form method="get" action="http://127.0.0.1:8000">
+			<button type="submit">Principal</button>
+</form>-->
+
+<a href="/atendimentos/dentista/{{ atendimento.dentista }}" class="btn btn-primary btn-large">&laquo; Voltar para atendimentos</a>
+
+
+	
+	
+{% endblock %} 
+
+
+

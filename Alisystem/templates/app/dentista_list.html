@@ -1,0 +1,59 @@
+ {% extends "app/layout.html" %} 
+
+{% block content %}
+	<h2>Painel dos Dentistas</h2>
+    <p>Clique nos botões abaixo para ver, para cada dentista, os 
+        <button class="btn btn-xs btn-primary">atendimentos</button>
+        , os
+        <button class="btn btn-xs btn-success">procedimentos repassados neste mês</button>
+        e os 
+        <button class="btn btn-xs btn-danger">procedimentos glosados</button> .
+
+    </p>
+    <br>
+
+	<ul>	
+		<table class="table table-responsive">
+			<tr>
+				<th>Cód.</th>
+				<th>Dentista</th>
+                <th>Ver todos os atendimentos do dentista</th>
+                <th>Ver procedimentos repassados neste mês</th>
+                <th>Ver procedimentos glosados</th>
+				
+				
+			</tr>
+			
+				{% for dentista in object_list %}
+				
+			<tr>
+                <td> {{ dentista.id }}</td>
+				<td> {{ dentista.nome_completo }}</a></td>
+                <td><a href="/atendimentos/dentista/{{ dentista.nome_completo }}" class="btn btn-xs btn-primary">Todos os atendimentos</a></td>
+                <td><a href="/procedimentos/dentista/{{ dentista.nome_completo }}" class="btn btn-xs btn-success">Procedimentos repassados neste mês</a></td>
+                <td><a href="/procedimentos/dentista/{{ dentista.nome_completo }}/glosado" class="btn btn-xs btn-danger">Procedimentos glosados</a></td>
+				
+				
+			</tr>
+				{% endfor %}
+			  
+			</table>
+		
+	</ul>
+
+<!--	
+<form method="get" action="http://127.0.0.1:8000">
+			<button type="submit">Principal</button>
+</form>-->
+
+
+
+<a href="/admin/Alisystem/dentista/add" class="btn btn-primary btn-large">Novo dentista &raquo;</a>
+
+<a href="{% url 'home' %}" class="btn btn-primary btn-large">Home &raquo;</a>
+	
+	
+{% endblock %} 
+
+
+

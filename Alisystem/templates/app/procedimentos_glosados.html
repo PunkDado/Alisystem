@@ -1,0 +1,65 @@
+ {% extends "app/layout.html" %} 
+
+{% block content %} 
+	
+<div class="jumbotron">
+    <h2>Procedimentos glosados</h2>
+    <p>Prepare o recurso de glosa hoje mesmo!</p>
+</div>
+    
+	
+
+	<ul>	
+		<table class="table table-condensed">
+			<tr>
+				<th>Núm. GTO</th>
+                <th>Data do atendimento</th>
+                <th>Paciente</th>
+                <th>Convênio</th>
+				<th>Procedimento</th>
+				<th>Glosado</th>
+                <th>Motivo da glosa</th>
+	
+				
+				
+			</tr>
+			
+				{% for procedimento in object_list %}
+				
+			<tr>
+				<td>{{ procedimento.atendimento.num_GTO }}</td>
+                <td>{{ procedimento.atendimento.data_atendimento }}</td>
+				<td>{{ procedimento.atendimento.paciente }}</td>
+                <td>{{ procedimento.atendimento.convenio }}</td>
+                <td>{{ procedimento.procedimento }}</td>
+				<td>{% if procedimento.glosado %} &#128530;  {% else %}  {% endif %}</td>
+				<td>{{ procedimento.motivo_glosa }}</td>
+                
+				
+				
+			</tr>
+				{% endfor %}
+			  
+			</table>
+			
+			<p></p>
+		
+	</ul>
+
+<!--	
+<form method="get" action="http://127.0.0.1:8000">
+			<button type="submit">Principal</button>
+</form>-->
+
+<a href="/dentistas" class="btn btn-primary btn-large">&laquo; Voltar para o Painel dos Dentistas</a>
+<br><br><br>
+<p>* Valor líquido recebido pelo procedimento, descontados os impostos e/ou taxas dos meios de pagamentos</p>
+<p>** Valor repassado ao dentista</p>
+
+
+	
+	
+{% endblock %} 
+
+
+

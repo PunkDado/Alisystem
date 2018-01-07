@@ -1,0 +1,35 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <p>Usuário: {{ user }}</p>
+    <h1>Painel dos dentistas</h1>
+    <p class="lead">Escolha abaixo o dentista</p>
+    
+	<p>Dentista: {{ escolha }}</p>
+    <p>Valor total: {{ valor }}</p>    
+    <table class="lead">
+    	<tr>
+    		<th>Núm. GTO</th>
+    		<th>Convênio</th>
+    		<th>Paciente</th>
+    		<th>Valor(R$)</th>
+    	</tr>
+    	<tbody>	   		
+    		{% for linha in table %}
+    		<tr>
+    			<td>{{ linha.convenio }}</td>
+    			<td>{{ linha.num_GTO }}</td>
+    			<td>{{ linha.paciente }}</td>
+    			<td>{{ linha.valor_real }}</td>
+			</tr>
+			{% endfor %}	
+		</tbody>    
+    </table>
+    
+    <p><a href="{% url 'home' %}" class="btn btn-primary btn-large">Home &raquo;</a></p>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <p>{{ hora_atual }}</p>
+    <h1>Alisystem</h1>
+    <p class="lead">Você está prestes a atribuir ({{ data_repasse }}) como uma nova data de repasse. Clique abaixo para confirmar.</p>
+
+    <p>
+    	<a href="confirma" class="btn btn-primary btn-large">Clique para definir {{ data_repasse }} como nova data de repasse &raquo;</a>
+    </p>
+
+
+</div>
+
+
+
+{% endblock %}

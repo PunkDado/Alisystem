@@ -1,0 +1,60 @@
+Alisystem: Planejamento de módulos e funcionalidades
+
+Fase 1.0- Módulos
+0. Administração: registro de pagamentos dos convênios e todas os registros, exceto Atendimentos - OK
+1. Atendimento: Novo atendimento e gestao de atendimentos - no Admin - OK
+2. Pagamentos: 
+	- Executa a ação de inserir uma data de pagamento (hoje) para os Atendimentos recebidos e não repassados - reusar do Alisystem_PG
+	- Exibe a tabela de repasses por dentista, por data de repasse - reusar do Alisystem_PG
+3. Paineis:
+	- Paineis dos dentistas para este mês, para o usuário logado -> FALTA APRESENTAR O VALOR REPASSADO
+	- Relatório de Glosas do dentista - reusar do Alisystem_PG
+	
+0. Apresentar valores com duas casas decimais - reusar do Alisystem_PG
+
+Mudanças no model.py:
+	- Campo "dente", logo após "procedimento" OK
+	- Somente campo "valor" => alteração somente no Verbose Name OK
+	- Retirar o campo "desconto" => OK
+	- Retirar "encaminhamento" => OK
+	- Implantar mais de um procedimento para cada GTO => Devem aparecer somente os valores da GTO atual
+    	- Tabela Procedimentos_aplicado, em relacionamento 1-muitos com Atendimento (que contém a GTO)
+    Cada Atendimento (GTO), contém vários Procedimentos_aplicados => OK
+	- Os pagamentos em parcelas devem constar em vários procedimentos aplicados => automatizar a criação de N procedimentos aplicados, em que N é o número de parcelas
+	- Alteração na lista de formas de pagamento => OK
+	- Alteração em models.py para acomodar as novas formas de pagamento => OK
+	- A data de recebimento deverá ser prevista para cada procedimento aplicado => OK
+	- Esconder o campo “mes_recebimento” no Admin.py => OK
+
+Regras de negócio:
+	- Regra geral: valor_repassado = 50% valor
+	- Dra. Tatiana, Prótese: valor_repassado = 60% valor
+	- Dra. Talita, Prótese: valor_repassado = 60% valor
+	- Dra. Camila, Orto: valor_repassado = R$20,00 * count(valor); R$40,00 para instalações
+	- Dr. Eduardo, Orto: valor_repassado = R$20,00 * count(valor); R$40,00 para instalações
+	- Dr. Fernando, Endo, convênio: valor_repassado = 60% valor
+
+Alterações para produção (08/07/2017)
+- models.py => makemigrations/ migrate
+- formas_pagamento_novo.csv => popular tabela
+- admin.py
+
+Fase 1.1-
+1. Procurar pacientes pelo nome
+2. Em Procedimentos_aplicados: não aparece o nome do paciente, nem se é convênio ou particular
+3. Arrumar para que apareça qual dente foi pago, porque só aparece a restauração e face
+4. Fazer aparecer em Procedimentos pagos, "repassado"
+
+Fase 1.2-
+
+1. Atendimento: novo atendimento e gestão de atendimentos fora do Admin
+2. Pagamentos: registro dos pagamentos na própria exibição dos Atendimentos por convênio
+				registrar os valores de valor_liquido e valor_repassado efetivamente repassados e armazenar no histórico (porque os valores de comissOes e acordos com dentistas podem mudar)
+3. Paneis: Paineis para todas as datas de repasse
+
+Próximas fases:
+
+- Agenda
+- Odontograma
+- Cadastro paciente
+- Recibos 

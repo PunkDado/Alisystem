@@ -1,0 +1,48 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+	<h2>Atendimentos</h2>
+
+
+	<ul>	
+		<table>
+			<tr>
+				<th>Cód.</th>
+				<th>Data de atendimento</th>
+				<th>Paciente</th>
+				<th>Dentista</th>
+				<th>Convênio</th>
+				<th>Procedimento</th>
+				<th>Número da GTO</th>
+			</tr>
+			
+				{% for atendimento in object_list %}
+				
+			<tr>
+				<td>{{ object_list.id }}</td>
+				<td>{{ object_list.data_atendimento }}</td>
+				<td>{{ object_list.paciente }}</td>
+				<td>{{ object_list.dentista }}</td>
+				<td>{{ object_list.convenio }}</td>
+				<td>{{ object_list.descr_anterior }}</td>
+				<td>{{ object_list.num_GTO }}</td>
+				
+			</tr>
+				{% endfor %}
+			  
+			</table>
+		
+	</ul>
+	
+<form method="get" action="http://127.0.0.1:8000">
+			<button type="submit">Principal</button>
+</form>
+
+
+	
+	
+	
+{% endblock %}
+
+
+

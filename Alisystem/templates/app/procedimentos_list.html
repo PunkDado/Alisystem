@@ -1,0 +1,65 @@
+ {% extends "app/layout.html" %} 
+
+{% block content %} 
+	
+<div class="jumbotron">
+    <h2>Procedimentos</h2>
+    <p>Repassados ao dentista neste mês</p>
+</div>
+    
+	
+
+	<ul>	
+		<table class="table table-condensed">
+			<tr>
+				<th>Núm. GTO</th>
+                <th>Data do atendimento</th>
+                <th>Paciente</th>
+                <th>Convênio</th>
+				<th>Procedimento</th>
+				<th>Valor recebido (R$)*</th>
+                <th>Valor repassado (R$)**</th>
+	
+				
+				
+			</tr>
+			
+				{% for procedimento in object_list %}
+				
+			<tr>
+				<td>{{ procedimento.atendimento.num_GTO }}</td>
+                <td>{{ procedimento.atendimento.data_atendimento }}</td>
+				<td>{{ procedimento.atendimento.paciente }}</td>
+                <td>{{ procedimento.atendimento.convenio }}</td>
+                <td>{{ procedimento.procedimento }}</td>
+				<td>{{ procedimento.valor_liquido_recebido }}</td>
+				<td>{{ procedimento.valor_repassado }}</td>
+                
+				
+				
+			</tr>
+				{% endfor %}
+			  
+			</table>
+			
+			<p></p>
+		
+	</ul>
+
+<!--	
+<form method="get" action="http://127.0.0.1:8000">
+			<button type="submit">Principal</button>
+</form>-->
+
+<a href="/dentistas" class="btn btn-primary btn-large">&laquo; Voltar para o Painel dos Dentistas</a>
+<br><br><br>
+<p>* Valor líquido recebido pelo procedimento, descontados os impostos e/ou taxas dos meios de pagamentos</p>
+<p>** Valor repassado ao dentista</p>
+
+
+	
+	
+{% endblock %} 
+
+
+

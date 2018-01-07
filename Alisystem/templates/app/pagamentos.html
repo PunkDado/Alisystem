@@ -1,0 +1,56 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+{{ num }}
+	
+
+    <h1>Pagamentos</h1>
+    <p class="lead">Abaixo o valores repassados para cada dentista (R$)</p>
+    
+    <p>
+    	<a href="/admin/Alisystem/atendimento/"  class="btn btn-primary btn-large">Registrar pagamentos dos convênios &raquo;</a>
+        <a href="data_repasse"  class="btn btn-primary btn-large">Definir nova data de repasse &raquo;</a>
+	</p>    
+
+	
+    
+</div>
+
+<!--
+<div class="row"> 
+	<p>Valores líquidos recebidos (R$)</p>   
+    
+    <table border = 2>
+    	
+    	{% for linha in table_liquido %}
+		<tr>
+			{% for coluna in linha %}
+			<th>{% if coluna != None %}{{ coluna }}{% endif %}</th>
+			{% endfor %}
+		</tr>
+		{% endfor %}
+		
+	</table>
+
+</div>
+-->
+<div class="row">    
+    <p class="lead">Valores repassados aos dentistas (R$)</p>   
+    
+    <table class = "table table-condensed">
+    	
+    	{% for linha in table_repasse %}
+		<tr>
+			{% for coluna in linha %}
+			<th>{% if coluna != None %}{{ coluna }}{% endif %}</th>
+			{% endfor %}
+		</tr>
+		{% endfor %}
+		
+	</table>
+
+</div>
+	
+{% endblock %}
