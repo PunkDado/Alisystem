@@ -19,11 +19,12 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.conf.urls import include
 admin.autodiscover()
-from Alisystem.forms import BootstrapAuthenticationForm
+from Alisystem.forms import BootstrapAuthenticationForm, RegistrarPagamentosForm
 from django.contrib.auth.views import *
 from Alisystem.views import home, contact, about
 from Alisystem.views import DentistaList, AtendimentoList, AtendimentoDentistaList, ProcedimentoAtendimentoList, Procedimentos_aplicadoDentistaDataList, AtendimentoDentistaGlosadoList
-from Alisystem.views import mostra_pagamentos, atribui_data_repasse, confirma_data_repasse
+from Alisystem.views import mostra_pagamentos, atribui_data_repasse, confirma_data_repasse, atualiza_valores, registrar_pagamentos, contact_thanks
+from Alisystem.views import AtendimentosProcedimentos_aplicadoCreate
 
 
 urlpatterns = [
@@ -48,15 +49,23 @@ urlpatterns = [
         name='login'),
     url(r'^logout$', logout, {  'next_page': '/'  },        name='logout'),
     
+    # MÓDULO INSERIR ATENDIMENTOS
+    url(r'^inserir_atendimentos/$', AtendimentosProcedimentos_aplicadoCreate.as_view(), name='inserir_atendimentos'),
+    
     # MÓDULO PAGAMENTOS
 	url(r'^pagamentos/$', mostra_pagamentos, name="pagamentos"),
     url(r'^pagamentos/data_repasse/$', atribui_data_repasse),
 	url(r'^pagamentos/data_repasse/confirma/$', confirma_data_repasse),
+    url(r'^pagamentos/data_repasse/confirma/atualiza$', atualiza_valores),
+    url(r'^registrar_pagamentos/$', registrar_pagamentos, name="registrar_pagamentos"),
+    url(r'^registrar_pagamentos/apresenta$', registrar_pagamentos, name="registrar_pagamentos"),
+    url(r'^contact/thanks$', contact_thanks),
     
     # MÓDULO PAINÉIS
     url(r'^dentistas/$', DentistaList.as_view(), name='dentistas'),
     url(r'^atendimentos/dentista/([\w-]+)/$', AtendimentoDentistaList.as_view()),
     url(r'^atendimentos/$', AtendimentoList.as_view(), name='atendimentos'),
+    url(r'^atendimentos/(?P<pk>[0-9]+)/$', ProcedimentoAtendimentoList.as_view(), name = 'atendimento_list'),
     url(r'^atendimentos/dentista/([\w-]+)/(?P<pk>[0-9]+)/$', ProcedimentoAtendimentoList.as_view()),
     url(r'^procedimentos/dentista/([\w-]+)/$', Procedimentos_aplicadoDentistaDataList.as_view()),
     url(r'^procedimentos/dentista/([\w-]+)/glosado/$', AtendimentoDentistaGlosadoList.as_view()),

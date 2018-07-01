@@ -107,7 +107,7 @@ class Atendimento(models.Model):
 #		valor_GTO = 
 	
 	def get_absolute_url(self):
-		return reverse('atendimento_convenio_list', kwargs={'pk': self.pk})
+		return reverse('atendimento_list', kwargs={'pk': self.pk})
 	
 	def __str__(self):
 		dentista = self.dentista
@@ -117,7 +117,7 @@ class Atendimento(models.Model):
 		return atendimento
 
 	class Meta:
-		ordering = ['data_atendimento']
+		ordering = ['-data_atendimento']
 
 
 
@@ -139,6 +139,9 @@ class Procedimentos_aplicado(models.Model):
 	repassado = models.BooleanField(blank=True, default=False)
 	#	desconto = models.FloatField(blank=True, null = True)	
     
+	def get_absolute_url(self):
+		return reverse('procedimentos_aplicado_list', kwargs={'pk': self.pk})
+	
 	def __str__(self):
 		procedimento = self.procedimento
 		valor_real = self.valor_real
@@ -150,8 +153,8 @@ class Procedimentos_aplicado(models.Model):
 #		num_GTO = atendimento.
 #		return 
 
-	class Meta:
-		ordering = ['procedimento']
+#	class Meta:
+#		ordering = ['procedimento']
 			
 
 	def valor_liquido(self): 		#Esse código pode melhorar, fazendo um loop sobre os elementos da tabela Formas_pagamento

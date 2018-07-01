@@ -1,4 +1,6 @@
- {% extends "app/layout.html" %} 
+{% extends "app/layout.html" %} 
+
+
 
 {% block content %}
 	
@@ -8,7 +10,8 @@
 </div>
 
 	<ul>	
-		<table class="table">
+		<table id="atendimento_list" class="table table-bordered table-striped">
+			<thead>
 			<tr>
 				<th>Cód.</th>
 				<th>Número da GTO</th>
@@ -19,6 +22,9 @@
 				
 				
 			</tr>
+			</thead>
+
+			<tbody>
 			
 				{% for atendimento in object_list %}
 				
@@ -33,6 +39,8 @@
 				
 			</tr>
 				{% endfor %}
+
+			</tbody>
 			  
 			</table>
 		
@@ -43,12 +51,54 @@
 			<button type="submit">Principal</button>
 </form>-->
 
-<a href="{% url 'dentistas' %}" class="btn btn-primary btn-large">&laquo; Voltar para lista de dentistas</a>
-<a href="/admin/Alisystem/atendimento/add" class="btn btn-primary btn-large">Novo atendimento &raquo;</a>
+<a href="{% url 'dentistas' %}" class="btn btn-primary btn-large">&laquo; Painel dentistas</a>
+<a href="{% url 'inserir_atendimentos' %}" class="btn btn-primary btn-large">Novo atendimento &raquo;</a>
 <br><br>
 <a href="{% url 'home' %}" class="btn btn-primary btn-large">Home &raquo;</a>
-	
+
 {% endblock %} 
 
+{% load staticfiles %}
 
+{% block scripts %}
+<!-- ./wrapper -->
+
+<!-- src="{% static "app/lucido_logo.png" %}"  -->
+
+<!-- jQuery 3 -->
+<script src="{% static "app/bower_components/jquery/dist/jquery.min.js" %}"></script>
+<!-- Bootstrap 3.3.7 -->
+<script src="{% static "app/bower_components/bootstrap/dist/js/bootstrap.min.js" %}"></script>
+<!-- DataTables -->
+<script src="{% static "app/bower_components/datatables.net/js/jquery.dataTables.min.js" %}"></script>
+<script src="{% static "app/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js" %}"></script>
+<!-- SlimScroll -->
+<script src="{% static "app/bower_components/jquery-slimscroll/jquery.slimscroll.min.js" %}"></script>
+<!-- FastClick -->
+<script src="{% static "app/bower_components/fastclick/lib/fastclick.js" %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static "app/dist/js/adminlte.min.js" %}"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="{% static "app/dist/js/demo.js" %}"></script>
+<!-- page script -->
+
+<script>
+  $(function () {
+    
+	$('#atendimento_list').DataTable()
+
+	// Versão com paginação, ordenação e info
+	// Se o id não existe, a função não é aplicada
+    $('#atendimento_list1').DataTable({
+      'paging'      : true,
+      'lengthChange': false,
+      'searching'   : false,
+      'ordering'    : true,
+      'info'        : true,
+      'autoWidth'   : false
+    })
+  })
+</script>
+
+{% endblock %}
 

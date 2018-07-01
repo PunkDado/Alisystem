@@ -1,17 +1,23 @@
-# ALISYSTEM_GTO
+# ALISYSTEM_GTO - Código de teste local
 
 
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpRequest, HttpResponseRedirect
 from django.template import RequestContext
 from django.db.models import Sum, F
+from django.db import transaction
+from django.db import connection
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import CreateView, UpdateView, DeleteView # Para possibilitar a manipulação de dados com forms
 from django.core.urlresolvers import reverse_lazy # Para possibilitar a manipulação de dados com forms
 from django.views.generic import ListView, DetailView
 from django.core.mail import send_mail
 from datetime import datetime, date
 from Alisystem.models import Atendimento, Procedimentos_aplicado, Dentista
+from Alisystem.forms import RegistrarPagamentosForm, InserirAtendimentoForm, InserirProcedimentos_aplicadoForm, Procedimentos_aplicadoFormSet
+
 
 ############ FUNÇÕES QUE PODEM SER UTILIZADAS AO LONGO DO CÓDIGO #################################
 
@@ -103,9 +109,75 @@ def about(request):
 
 ############### FIM DE HOME, CONTATO E SOBRE ################################################
 
+################ MÓDULO ATENDIMENTOS ########################################################
+
+# Método que cria um formulário para inserir atendimentos
+def registrar_pagamentos(request):
+    if request.method == 'POST':
+        form = InserirAtendimentoForm(request.POST)
+        #form_1 = InserirProcedimentos_aplicadoForm(request.POST)
+        if form.is_valid():
+            atendimento = form.save(commit = False)
+            atendimento.data_envio = datetime.now()
+            atendimento.save()
+            #form_1 = InserirProcedimentos_aplicadoForm(request.POST)
+            #form_1.atendimento = atendimento
+            #if form_1.is_valid():
+            #    procedimento_aplicado = form_1.save(commint = False)
+            #    procedimento_aplicado.save()
+
+            return HttpResponseRedirect ('/registrar_pagamentos')
+        
+
+    else:
+        form = InserirAtendimentoForm()
+    return render(request, 'app/registrar_pagamentos.html', {'form': form})#, 'form_1': form_1})
+
+def contact_thanks(request):
+    return render(request, 'app/obrigado.html', {})
+
+# Classe para criar procedimentos aplicadosm aninhados em cada atendimento
+class AtendimentosProcedimentos_aplicadoCreate(LoginRequiredMixin, CreateView):
+    login_url = '/login/'
+    redirect_field_name = 'redirect_to'
+    model = Atendimento
+    template_name = 'app/atendimento_form.html'
+    fields = ['dentista', 'paciente', 'convenio', 'data_atendimento', 'num_GTO', 'data_envio', 'mes_recebimento',
+    'comentarios', 'encaminhado_por', 'verificado']
+
+    def get_context_data(self, **kwargs):
+        data = super(AtendimentosProcedimentos_aplicadoCreate, self).get_context_data(**kwargs)
+        if self.request.POST:
+            data['procedimentos_aplicados'] = Procedimentos_aplicadoFormSet(self.request.POST)
+        else:
+            data['procedimentos_aplicados'] = Procedimentos_aplicadoFormSet()
+        return data
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        procedimentos_aplicados = context['procedimentos_aplicados']
+        with transaction.atomic():
+            self.object = form.save()
+
+            if procedimentos_aplicados.is_valid():
+                procedimentos_aplicados.instance = self.object
+                procedimentos_aplicados.save()
+        return super(AtendimentosProcedimentos_aplicadoCreate, self).form_valid(form)
+
+# Classe para inserir atendimentos
+class AtendimentoCreate(LoginRequiredMixin, CreateView):
+    login_url = '/login/'
+    redirect_field_name = 'redirect_to'
+    model = Atendimento
+    fields = ['dentista', 'paciente', 'convenio', 'data_atendimento', 'num_GTO', 'data_envio', 'mes_recebimento', 
+    'comentarios', 'encaminhado_por', 'verificado']
+
+############### FIM DE ATENDIMENTOS ################################################
+
 ######## MÓDULO PAGAMENTOS - VERSÃO 1 ########################################################
 
 # Método que mostra todos os valores líquidos recebidos e valores repassados, por dentista e por data de repasse
+@login_required(login_url = '/login/')
 def mostra_pagamentos(request):
     header = ["Dentista"] 	# Lista todas as datas de repasse
     datas_repasse = Procedimentos_aplicado.objects.order_by('data_repasse').values_list('data_repasse', flat=True).distinct()
@@ -138,53 +210,177 @@ def mostra_pagamentos(request):
     return render(request, 'app/pagamentos.html', {'table_liquido': table_liquido, 'table_repasse': table_repasse})
 	
 # Método que atribui HOJE como data de repasse aos dentistas
+@login_required(login_url = '/login/')
 def atribui_data_repasse(request):
 	data_repasse = date.today()	
 	return render(request, 'app/data_repasse.html', {'data_repasse': data_repasse})
 
-# Método que atribui confirma a data de repasse e atribui os valores de VALOR_LIQUIDO_RECEBIDO e VALOR_REPASSADO aos registros com RECEBIDO=TRUE e REPASSADO=FALSE
-def confirma_data_repasse(request):
-	data_repasse = date.today()	
-	a = Procedimentos_aplicado.objects.filter(recebido=True, data_repasse=None).update(data_repasse=data_repasse)
-	b = Procedimentos_aplicado.objects.filter(data_repasse=data_repasse)
-	b.update(repassado=True)
-	for procedimentos_aplicados in b:
-		procedimentos_aplicados.valor_liquido_recebido = procedimentos_aplicados.valor_liquido()
-		procedimentos_aplicados.valor_repassado = procedimentos_aplicados.valor_repasse()
-		procedimentos_aplicados.save()
-	num = Procedimentos_aplicado.objects.filter(data_repasse=data_repasse).count()
+'''
+# Método que executa queries SQL diretamete, eliminando a camada de models
+def atribui_valores():
+    query = "UPDATE public.'Alisystem_procedimentos_aplicado' AS papl SET valor_liquido_recebido = valor_real * (1 - 0.1133) FROM public.'Alisystem_atendimento' AS att WHERE papl.atendimento_id = att.id AND att.convenio_id <> 12 AND papl.data_repasse = '2018-05-05' AND papl.recebido = TRUE AND valor_liquido_recebido IS NULL;"
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        row = "Pronto"
 
-	return render(request, 'app/data_repasse_confirma.html', {'data_repasse': data_repasse, 'num': num, 'b': b})
+    return row
+'''
+
+# Método que confirma a data de repasse e atribui TRUE para os valores repassados
+@login_required(login_url = '/login/')
+def confirma_data_repasse(request):
+    data_repasse = date.today()
+    a = Procedimentos_aplicado.objects.filter(recebido=True, data_repasse=None).update(data_repasse=data_repasse)
+    b = Procedimentos_aplicado.objects.filter(data_repasse=data_repasse)
+    num = b.count()
+    b.update(repassado=True)
+    
+    # Este código faz o update usando SQL no sistema de teste; no sistema em produção não funciona
+    query = ''' UPDATE public.'Alisystem_procedimentos_aplicado' AS papl 
+                SET valor_liquido_recebido = valor_real * (1 - 0.1133) 
+                FROM public.'Alisystem_atendimento' AS att 
+                WHERE papl.atendimento_id = att.id 
+                AND att.convenio_id <> 12 
+                AND papl.data_repasse = '2018-05-05' 
+                AND papl.recebido = TRUE 
+                AND valor_liquido_recebido IS NULL;
+                '''
+    """cursor = connection.cursor()
+    try:
+        #cursor.execute("UPDATE Alisystem_procedimentos_aplicado AS papl SET valor_liquido_recebido = valor_real * (1 - 0.1133) FROM Alisystem_atendimento AS att WHERE papl.atendimento_id = att.id AND att.convenio_id <> 12 AND papl.data_repasse = '2018-05-05' AND papl.recebido = TRUE AND valor_liquido_recebido IS NULL;")
+        #cursor.execute("SELECT COUNT(*) FROM Alisystem_procedimentos_aplicado;")
+        cursor.execute('''  UPDATE Alisystem_procedimentos_aplicado 
+                            SET valor_liquido_recebido = valor_real * (1 - 0.1333)
+                            WHERE data_repasse = %s;''' % data_repasse)
+        cursor.execute('''  UPDATE Alisystem_procedimentos_aplicado 
+                            SET valor_repassado = valor_liquido_recebido * 0.5
+                            WHERE data_repasse = %s;''' % data_repasse)
+        #cursor.execute("UPDATE Alisystem_procedimentos_aplicado SET valor_liquido_recebido = valor_real * (1 - 0.1133) FROM Alisystem_atendimento WHERE atendimento_id = Alisystem_atendimento.id AND Alisystem_atendimento.convenio_id <> 12 AND data_repasse = '2018-05-05' AND recebido = TRUE AND valor_liquido_recebido IS NULL;")
+    finally:
+        cursor.close()
+    """
+
+    # Este trecho calcula corretamente no sistema de teste; no sistema em produção no Heroku não calcula
+    '''
+    for procedimentos_aplicados in b:
+        procedimentos_aplicados.valor_liquido_recebido = procedimentos_aplicados.valor_liquido()
+        procedimentos_aplicados.valor_repassado = procedimentos_aplicados.valor_repasse()
+        procedimentos_aplicados.save()
+    '''
+    
+    '''
+    k = 5
+    num_updates = int(num / k)
+    
+    # Descobri que o subset b[0:1] só traz o primeiro registro, e que b[0:10] só traz 10 registros, de b[0] a b[9];
+    # Descobri também que b[um número] não retorna nada
+    if num_updates >= 1:
+        for i in range(num_updates):
+            inicio_local = i*k
+            fim_local = i*k+k
+            c = b[inicio_local:fim_local]
+            for procedimentos_aplicados in c:
+                procedimentos_aplicados.valor_liquido_recebido = procedimentos_aplicados.valor_liquido()
+                procedimentos_aplicados.valor_repassado = procedimentos_aplicados.valor_repasse()
+                procedimentos_aplicados.save()
+    
+    c = b[num_updates * k:num]
+    for procedimentos_aplicados in c:
+                procedimentos_aplicados.valor_liquido_recebido = procedimentos_aplicados.valor_liquido()
+                procedimentos_aplicados.valor_repassado = procedimentos_aplicados.valor_repasse()
+                procedimentos_aplicados.save()
+    '''
+    
+
+    return render(request, 'app/data_repasse_confirma.html', {'data_repasse': data_repasse, 'num': num, 'b': b})
+
+# Método que atribui os valores de VALOR_LIQUIDO_RECEBIDO e VALOR_REPASSADO aos registros com RECEBIDO=TRUE e REPASSADO=FALSE    
+def atualiza_valores(request):
+    data_repasse = date.today()
+    b = Procedimentos_aplicado.objects.filter(data_repasse=data_repasse)
+    num = b.count()
+    k = 5
+    num_updates = int(num / k)
+    
+    # Descobri que o subset b[0:1] só traz o primeiro registro, e que b[0:10] só traz 10 registros, de b[0] a b[9];
+    # Descobri também que b[um número] não retorna nada
+    if num_updates >= 1:
+        for i in range(num_updates):
+            inicio_local = i*k
+            fim_local = i*k+k
+            c = b[inicio_local:fim_local]
+            for procedimentos_aplicados in c:
+                procedimentos_aplicados.valor_liquido_recebido = procedimentos_aplicados.valor_liquido()
+                procedimentos_aplicados.valor_repassado = procedimentos_aplicados.valor_repasse()
+                procedimentos_aplicados.save()
+    
+    c = b[num_updates * k:num]
+    for procedimentos_aplicados in c:
+                procedimentos_aplicados.valor_liquido_recebido = procedimentos_aplicados.valor_liquido()
+                procedimentos_aplicados.valor_repassado = procedimentos_aplicados.valor_repasse()
+                procedimentos_aplicados.save()
+
+    return render(request, 'app/data_repasse_confirma.html', {'data_repasse': data_repasse, 'num': num, 'b': b})
+
+
+
+"""
+# Método que cria um formulário para registrar os pagamentos
+def registrar_pagamentos(request):
+    if request.method == 'POST':
+        form = InserirAtendimentoForm(request.POST)
+        #cd = form.cleaned_data
+        form.save(commit = False)
+        return HttpResponseRedirect ('/contact/thanks')
+    else:
+        form = InserirAtendimentoForm()
+    return render(request, 'app/registrar_pagamentos.html', {'form': form})
+"""
+
+
 
 ######## FIM DO MÓDULO PAGAMENTOS - VERSÃO 1 ########################################################
 
 ######## MÓDULO PAINEIS - VERSÃO 1 ###############################################################
 
 # Classe que mostra uma lista de todos os dentistas
-class DentistaList(ListView):
+class DentistaList(LoginRequiredMixin, ListView):
+    login_url = '/login/'
+    redirect_field_name = 'redirect_to'
     model = Dentista
     template_name = 'app/dentista_list.html'
 
 # Classe que mostra uma lista de todos os atendimentos
-class AtendimentoList(ListView):
+
+class AtendimentoList(LoginRequiredMixin, ListView):
+    login_url = '/login/'
+    redirect_field_name = 'redirect_to'
     model = Atendimento
     template_name = 'app/atendimento_list.html'
 
+
+
 # Classe para apresentar todos os atendimentos para o dentista selecionado
-class AtendimentoDentistaList(ListView):
+class AtendimentoDentistaList(LoginRequiredMixin, ListView):
+    login_url = '/login/'
+    redirect_field_name = 'redirect_to'
     template_name = 'app/atendimento_list.html'
     def get_queryset(self):
         self.dentista = get_object_or_404(Dentista, nome_completo=self.args[0])
         return Atendimento.objects.filter(dentista=self.dentista)
 
 # Classe para apresentar os detalhes do Atendimento, ou seja, os procedimentos para cada Atendimento
-class ProcedimentoAtendimentoList(DetailView):
-	model = Atendimento
-	template_name = 'app/procedimentos_por_atendimento.html'
+class ProcedimentoAtendimentoList(LoginRequiredMixin, DetailView):
+    login_url = '/login/'
+    redirect_field_name = 'redirect_to'
+    model = Atendimento
+    template_name = 'app/procedimentos_por_atendimento.html'
 
 
 # Classe para apresentar os procedimentos repassados no mês atual para o dentista selecionado
-class Procedimentos_aplicadoDentistaDataList(ListView):
+class Procedimentos_aplicadoDentistaDataList(LoginRequiredMixin, ListView):
+    login_url = '/login/'
+    redirect_field_name = 'redirect_to'
     template_name = 'app/procedimentos_list.html'
     def get_queryset(self):
         self.dentista = get_object_or_404(Dentista, nome_completo=self.args[0])
@@ -194,7 +390,9 @@ class Procedimentos_aplicadoDentistaDataList(ListView):
 
 # Classe para apresentar os atendimentos glosados para o dentista selecionado
 # Não está retornando nada, estou tentando
-class AtendimentoDentistaGlosadoList(ListView):
+class AtendimentoDentistaGlosadoList(LoginRequiredMixin, ListView):
+    login_url = '/login/'
+    redirect_field_name = 'redirect_to'
     template_name = 'app/procedimentos_glosados.html'
     def get_queryset(self):
         self.dentista = get_object_or_404(Dentista, nome_completo=self.args[0])
